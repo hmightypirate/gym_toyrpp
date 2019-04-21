@@ -61,13 +61,13 @@ class ToyRPPEnv(gym.Env):
 
         self._buffer = np.zeros((VIEWPORT[0], VIEWPORT[1], 3), dtype=np.uint8)
         self._buffer[new_env_view[my_viewport_x:my_viewport_x + VIEWPORT[0],
-                                  my_viewport_y:my_viewport_y + VIEWPORT[1]] == 1] = (255, 0, 0)
+                                  my_viewport_y:my_viewport_y + VIEWPORT[1]] == 1] = (125, 0, 0)
 
         self._buffer[new_env_view[my_viewport_x:my_viewport_x + VIEWPORT[0],
                                   my_viewport_y:my_viewport_y + VIEWPORT[1]] == 2] = (0, 255, 0)
 
         self._buffer[new_env_view[my_viewport_x:my_viewport_x + VIEWPORT[0],
-                                  my_viewport_y:my_viewport_y + VIEWPORT[1]] == 3] = (0, 0, 255)
+                                  my_viewport_y:my_viewport_y + VIEWPORT[1]] == 3] = (0, 0, 200)
 
         # FIXME: delete
         #self._buffer[0:4,0, 2 ] = (int(255 *self.current_pos[0]/self.env_size),
