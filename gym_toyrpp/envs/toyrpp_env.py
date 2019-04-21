@@ -152,10 +152,8 @@ class ToyRPPEnv(gym.Env):
             
 
         if self.current_pos[0] == self.target_pos[0] and self.current_pos[1] == self.target_pos[1]:
-            print ("Game Over:Win")
-            self.game_over = True
-
-
+            print ("Win")
+ 
         if self.current_env[self.current_pos[0],
                             self.current_pos[1]] == 1:
             self.game_over = True
@@ -178,6 +176,15 @@ class ToyRPPEnv(gym.Env):
             return -1.0
 
         if self.current_pos[0] == self.target_pos[0] and self.current_pos[1] == self.target_pos[1]:
+            # New target pos
+            self.target_pos = np.random.randint(0, self.env_size, 2)
+
+            while(self.current_env[self.target_pos[0],
+                                   self.target_pos[1]] == 1.0):
+                self.target_pos = np.random.randint(0, self.env_size, 2)
+
+            print ("MAX Reward ")
+                
             return 1000.0
 
         elif (np.linalg.norm(self.current_pos - self.target_pos) <
