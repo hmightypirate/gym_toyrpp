@@ -4,7 +4,7 @@ import copy
 from gym import error, spaces, utils
 from gym.utils import seeding
 
-VIEWPORT = (32, 32)
+VIEWPORT = (64, 64)
 
 class ToyRPPEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -42,16 +42,19 @@ class ToyRPPEnv(gym.Env):
         build an rgb  image with the information and store it in the buffer
         """
 
-        my_viewport_x = min(0, self.current_pos[0] - VIEWPORT[0]/2)
+        my_viewport_x = max(0, self.current_pos[0] - VIEWPORT[0]/2)
         my_viewport_x = min(my_viewport_x, self.env_size - VIEWPORT[0])
 
-        my_viewport_y = min(0, self.current_pos[1] - VIEWPORT[1]/2)
-        my_viewport_y = min(my_viewport_x, self.env_size - VIEWPORT[1])
+        my_viewport_y = max(0, self.current_pos[1] - VIEWPORT[1]/2)
+        my_viewport_y = min(my_viewport_y, self.env_size - VIEWPORT[1])
 
         my_viewport_x = int(my_viewport_x)
         my_viewport_y = int(my_viewport_y)
+
+
+#        print ("MY_VIEWPORT_X ", my_viewport_x, "Y ", my_viewport_y, self.current_pos)
         
-        new_env_view = self.current_env
+        new_env_view = copy.deepcopy(self.current_env)
 
         new_env_view[self.current_pos[0], self.current_pos[1]] = 2
         new_env_view[self.target_pos[0], self.target_pos[1]] = 3
@@ -66,9 +69,16 @@ class ToyRPPEnv(gym.Env):
         self._buffer[new_env_view[my_viewport_x:my_viewport_x + VIEWPORT[0],
                                   my_viewport_y:my_viewport_y + VIEWPORT[1]] == 3] = (0, 0, 255)
 
+        # FIXME: delete
+        #self._buffer[0:4,0, 2 ] = (int(255 *self.current_pos[0]/self.env_size),
+        #                           int(255 *self.current_pos[1]/self.env_size),
+        #                           int(255 *self.target_pos[0]/self.env_size),
+        #                           int(255 *self.target_pos[1]/self.env_size))
+
+        
         return self._buffer
                                        
-    def __init__(self, env_size= 1000, obs_threshold=0.9, my_seed=None):
+    def __init__(self, env_size=64, obs_threshold=0.9, my_seed=None):
         """ Initialize the environment 
         Parameters:
         - env_size : (width, height) of the environment
@@ -99,10 +109,12 @@ class ToyRPPEnv(gym.Env):
         # store the size for initiliazing on reset
         self.env_size = env_size
         self.obs_threshold = obs_threshold
-        self.max_steps = env_size * 2
+        self.max_steps = env_size * 4
         # the game will finish if the agent exceeds the maximum number of steps
         self.current_step = 0
         self.game_over = False
+
+        self.env_size = env_size
         
 
     def _act(self, action):
@@ -129,16 +141,20 @@ class ToyRPPEnv(gym.Env):
             self.current_pos[0] += 1
 
             if self.current_pos[0] == self.env_size:
-                self.current_pos[0] = 0
+                self.current_pos[0] -= 1
                 
         self.current_step += 1
 
         
         if self.current_step > self.max_steps:
             self.game_over = True
+            print ("Game Over:Maxsteps")
+            
 
         if self.current_pos[0] == self.target_pos[0] and self.current_pos[1] == self.target_pos[1]:
+            print ("Game Over:Win")
             self.game_over = True
+
 
         if self.current_env[self.current_pos[0],
                             self.current_pos[1]] == 1:
@@ -162,11 +178,11 @@ class ToyRPPEnv(gym.Env):
             return -1.0
 
         if self.current_pos[0] == self.target_pos[0] and self.current_pos[1] == self.target_pos[1]:
-            return 1.0
+            return 1000.0
 
         elif (np.linalg.norm(self.current_pos - self.target_pos) <
               np.linalg.norm(prev_pos - self.target_pos)):
-            return 0.0
+            return 0.1
 
         else:
             # the agent is not getting closer to the target

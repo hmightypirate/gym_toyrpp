@@ -1,8 +1,9 @@
 import gym
+import time
 import gym_toyrpp
 
 
-env = gym.make('toyrpp-v0')
+env = gym.make('toyrpp-v1000')
 env.reset()
 
 steps = 0
@@ -15,8 +16,10 @@ while(True):
     
     if game_over:
         print ("STEPS ", steps)
-        env.reset()
+        env.reset()    
         steps = 0
+        
+    time.sleep(5)
 
 env.close()
 
