@@ -30,7 +30,7 @@ import gym_toyrpp
 ```
 
 ## Observation
-The state is the current viewport (64, 64) with the agent in the centre unless it is closer to a boundary of the environment. Furthermore, two positions are give:
+The state is the current viewport (64, 64) with the agent in the centre unless it is closer to a boundary of the environment. Furthermore, two positions are given:
 
 * agent_pos: current position of the agent
 * target_pos: position of the goal
