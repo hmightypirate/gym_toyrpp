@@ -114,7 +114,8 @@ class ToyRPPEnv(gym.Env):
         # the game will finish if the agent exceeds the maximum number of steps
         self.current_step = 0
         self.game_over = False
-
+        self.min_distance = 1e8
+        
         self.env_size = env_size
         
 
@@ -143,6 +144,9 @@ class ToyRPPEnv(gym.Env):
 
             if self.current_pos[0] == self.env_size:
                 self.current_pos[0] -= 1
+
+        else:
+            print ("Something wrong happened")
                 
         self.current_step += 1
 
@@ -174,6 +178,7 @@ class ToyRPPEnv(gym.Env):
         """
 
         if self.current_env[self.current_pos[0], self.current_pos[1]] == 1:
+            #print ("Collision")
             return -1.0
 
         if self.current_pos[0] == self.target_pos[0] and self.current_pos[1] == self.target_pos[1]:
@@ -185,11 +190,13 @@ class ToyRPPEnv(gym.Env):
                 self.target_pos = np.random.randint(0, self.env_size, 2)
 
             print ("MAX Reward ")
+            self.min_distance = 1e8
                 
-            return 1000.0
+            return 1.0
 
         elif (np.linalg.norm(self.current_pos - self.target_pos) <
               np.linalg.norm(prev_pos - self.target_pos)):
+
             return .01
 
         else:
@@ -222,6 +229,7 @@ class ToyRPPEnv(gym.Env):
 
         self.current_step = 0
         self.game_over = False
+        self.min_distance = 1e8
         # init the environment
 
         self._get_new_environment()
