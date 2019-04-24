@@ -1,10 +1,12 @@
 import gym
 import numpy as np
 import copy
+import cv2
 from gym import error, spaces, utils
 from gym.utils import seeding
 
-VIEWPORT = (64, 64)
+VIEWPORT = (16, 16)
+UPSCALING = 4
 
 class ToyRPPEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -75,8 +77,7 @@ class ToyRPPEnv(gym.Env):
         #                           int(255 *self.target_pos[0]/self.env_size),
         #                           int(255 *self.target_pos[1]/self.env_size))
 
-        
-        return self._buffer
+        return cv2.resize(self._buffer, (UPSCALING * VIEWPORT[0], UPSCALING * VIEWPORT[1])) # FIXME: scale
                                        
     def __init__(self, env_size=64, obs_threshold=0.9, my_seed=None):
         """ Initialize the environment 
@@ -90,7 +91,7 @@ class ToyRPPEnv(gym.Env):
         # to ensure compatibility
         self.observation_space = spaces.Box(
             low=0, high=255,
-            shape=(screen_height, screen_width, 3))
+            shape=(screen_height * UPSCALING, screen_width * UPSCALING, 3))
 
         # buffer with them image
         self._buffer = np.empty((screen_height, screen_width, 3),
@@ -189,11 +190,11 @@ class ToyRPPEnv(gym.Env):
 
         elif (np.linalg.norm(self.current_pos - self.target_pos) <
               np.linalg.norm(prev_pos - self.target_pos)):
-            return 0.1
+            return .01
 
         else:
             # the agent is not getting closer to the target
-            return -0.01
+            return -.04
 
     def step(self, action):
         """ Executes one action step and returns:
@@ -209,6 +210,10 @@ class ToyRPPEnv(gym.Env):
         reward, game_over = self._act(action)
         
         ob = self._get_obs()
+
+        if reward > 1:
+            print ("GAME OVER ? ", game_over, "REWARD", reward)
+            
         
         return ob, reward, game_over, {"agent_pos": self.current_pos,
                                        "target_pos": self.target_pos}
@@ -228,7 +233,7 @@ class ToyRPPEnv(gym.Env):
         if self.viewer is None:
             self.viewer = rendering.SimpleImageViewer()
 
-        self.viewer.imshow(self._buffer)        
+        self.viewer.imshow(self._get_obs())        
 
     def close(self):
         if self.viewer is not None:
