@@ -27,17 +27,18 @@ class ToyRPPEnv(gym.Env):
         self.current_pos = np.random.randint(0, self.env_size, 2)
 
         # Check if the starting position is an obstacle
-        # and take another one if it is
-        while(self.current_env[self.current_pos[0],
-                               self.current_pos[1]] == 1.0):
-            self.current_pos = np.random.randint(0, self.env_size, 2)
+        if self.current_env[self.current_pos[0],
+                               self.current_pos[1]] == 1.0:
+
+            self.current_env[self.current_pos[0],
+                             self.current_pos[1]] == 0.0
+           
             
         self.target_pos = np.random.randint(0, self.env_size, 2)
-
-        while(self.current_env[self.target_pos[0],
-                               self.target_pos[1]] == 1.0):
-            self.target_pos = np.random.randint(0, self.env_size, 2)
-        
+        if self.current_env[self.target_pos[0],
+                            self.target_pos[1]] == 1.0:
+            self.current_env[self.target_pos[0],
+                             self.target_pos[1]] == 0.0
         
     def _get_obs(self):
         """
