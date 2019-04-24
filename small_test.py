@@ -19,7 +19,7 @@ while(True):
         env.reset()    
         steps = 0
         
-    time.sleep(5)
+    time.sleep(1)
 
 env.close()
 

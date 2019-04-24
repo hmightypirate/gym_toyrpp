@@ -39,6 +39,7 @@ class ToyRPPEnv(gym.Env):
                             self.target_pos[1]] == 1.0:
             self.current_env[self.target_pos[0],
                              self.target_pos[1]] == 0.0
+            
         
     def _get_obs(self):
         """
@@ -53,9 +54,6 @@ class ToyRPPEnv(gym.Env):
 
         my_viewport_x = int(my_viewport_x)
         my_viewport_y = int(my_viewport_y)
-
-
-#        print ("MY_VIEWPORT_X ", my_viewport_x, "Y ", my_viewport_y, self.current_pos)
         
         new_env_view = copy.deepcopy(self.current_env)
 
@@ -70,15 +68,10 @@ class ToyRPPEnv(gym.Env):
                                   my_viewport_y:my_viewport_y + VIEWPORT[1]] == 2] = (0, 255, 0)
 
         self._buffer[new_env_view[my_viewport_x:my_viewport_x + VIEWPORT[0],
-                                  my_viewport_y:my_viewport_y + VIEWPORT[1]] == 3] = (0, 0, 200)
+                                  my_viewport_y:my_viewport_y + VIEWPORT[1]] == 3] = (200, 200, 200)
 
-        # FIXME: delete
-        #self._buffer[0:4,0, 2 ] = (int(255 *self.current_pos[0]/self.env_size),
-        #                           int(255 *self.current_pos[1]/self.env_size),
-        #                           int(255 *self.target_pos[0]/self.env_size),
-        #                           int(255 *self.target_pos[1]/self.env_size))
 
-        return cv2.resize(self._buffer, (UPSCALING * VIEWPORT[0], UPSCALING * VIEWPORT[1])) # FIXME: scale
+        return cv2.resize(self._buffer, (UPSCALING * VIEWPORT[0], UPSCALING * VIEWPORT[1]))
                                        
     def __init__(self, env_size=64, obs_threshold=0.9, my_seed=None):
         """ Initialize the environment 
@@ -198,11 +191,11 @@ class ToyRPPEnv(gym.Env):
         elif (np.linalg.norm(self.current_pos - self.target_pos) <
               np.linalg.norm(prev_pos - self.target_pos)):
 
-            return .01
+            return .001
 
         else:
             # the agent is not getting closer to the target
-            return -.04
+            return -.004
 
     def step(self, action):
         """ Executes one action step and returns:
